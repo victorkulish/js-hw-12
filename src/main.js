@@ -2,8 +2,8 @@ import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
-import { createMarkup } from './js/create-markup';
-import { getPictures } from './js/get-pictures';
+import { createMarkup } from './js/render-function';
+import { getPictures } from './js/pixabay-api';
 import { scrollingTopPage } from './js/scrolling';
 
 const formSearch = document.querySelector('.js-search');
