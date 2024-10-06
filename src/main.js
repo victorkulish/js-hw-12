@@ -13,7 +13,7 @@ const btnLoader = document.querySelector('.btn-load');
 const loaderMore = document.querySelector('.loader-more');
 const endLoader = document.querySelector('.end-loader');
 let currentPage = 1;
-const perPage = 40;
+const perPage = 40; // Количество изображений на странице
 let inputSearch = '';
 let simpleLightboxExem;
 
@@ -73,58 +73,21 @@ async function onSearch(event) {
       captionDelay: 250,
     }).refresh();
 
-    const totalPages = Math.ceil(data.totalHits / perPage);
-    if (currentPage === totalPages) {
-      btnLoader.style.display = 'none';
-      endLoader.style.display = 'block';
-    } else {
+    const totalPages = Math.ceil(data.totalHits / perPage); // Общее количество страниц
+
+    if (currentPage < totalPages) {
       btnLoader.style.display = 'block';
+    } else {
+      endLoader.style.display = 'block';
     }
 
     formSearch.reset();
   } catch (err) {
     loader.style.display = 'none';
-    console.log(err);
-  }
-}
-
-async function fetchPictures() {
-  try {
-    const data = await getPictures(inputSearch, currentPage);
-    loader.style.display = 'none';
-
-    const totalPages = Math.ceil(data.totalHits / perPage);
-    if (currentPage === totalPages) {
-      btnLoader.style.display = 'none';
-      endLoader.style.display = 'block';
-    } else {
-      btnLoader.style.display = 'block';
-    }
-
-    if (!data.hits.length) {
-      iziToast.error({
-        title: 'Error',
-        message:
-          'Sorry, there are no images matching your search query. Please try again!',
-      });
-      return;
-    }
-
-    listImages.insertAdjacentHTML('beforeend', createMarkup(data.hits));
-    iziToast.success({
-      title: 'Wow',
-      message: `We found ${data.totalHits} pictures!`,
+    iziToast.error({
+      title: 'Error',
+      message: 'Something went wrong. Please try again later.',
     });
-
-    simpleLightboxExem = new SimpleLightbox('.gallery a', {
-      captions: true,
-      captionsData: 'alt',
-      captionDelay: 250,
-    }).refresh();
-
-    formSearch.reset();
-  } catch (err) {
-    loader.style.display = 'none';
     console.log(err);
   }
 }
@@ -152,24 +115,25 @@ async function onLoadMore() {
 
     simpleLightboxExem.refresh();
 
-    const totalPages = Math.ceil(data.totalHits / perPage);
+    const totalPages = Math.ceil(data.totalHits / perPage); // Общее количество страниц
 
-    if (currentPage === totalPages) {
+    if (currentPage < totalPages) {
+      btnLoader.style.display = 'block';
+    } else {
       iziToast.info({
         title: 'Caution',
         message: `We're sorry, but you've reached the end of search results.`,
       });
-
-      btnLoader.style.display = 'none';
-      loaderMore.style.display = 'none';
       endLoader.style.display = 'block';
-
-      return;
     }
 
     loaderMore.style.display = 'none';
-    btnLoader.style.display = 'block';
   } catch (error) {
+    loaderMore.style.display = 'none';
+    iziToast.error({
+      title: 'Error',
+      message: 'Something went wrong. Please try again later.',
+    });
     console.log(error);
   }
 }
