@@ -4,7 +4,7 @@ import 'izitoast/dist/css/iziToast.min.css';
 
 export { getPictures };
 
-const perPage = 40;
+const perPage = 15;
 
 async function getPictures(name, page) {
   const KEY = '46359588-09116391d0d94e56de7df57e6';
