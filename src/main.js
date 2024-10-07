@@ -16,6 +16,7 @@ let currentPage = 1;
 const perPage = 40; // Количество изображений на странице
 let inputSearch = '';
 let simpleLightboxExem;
+let totalHits = 0; // Общее количество найденных изображений
 
 loader.style.display = 'none';
 loaderMore.style.display = 'none';
@@ -49,6 +50,7 @@ async function onSearch(event) {
 
   try {
     const { data } = await getPictures(inputSearch, currentPage);
+    totalHits = data.totalHits;
 
     loader.style.display = 'none';
 
@@ -73,12 +75,11 @@ async function onSearch(event) {
       captionDelay: 250,
     }).refresh();
 
-    const totalPages = Math.ceil(data.totalHits / perPage); // Общее количество страниц
-
-    if (currentPage < totalPages) {
-      btnLoader.style.display = 'block';
-    } else {
+    // Проверка: если все изображения уже загружены
+    if (totalHits <= perPage * currentPage) {
       endLoader.style.display = 'block';
+    } else {
+      btnLoader.style.display = 'block';
     }
 
     formSearch.reset();
@@ -115,16 +116,17 @@ async function onLoadMore() {
 
     simpleLightboxExem.refresh();
 
-    const totalPages = Math.ceil(data.totalHits / perPage); // Общее количество страниц
-
-    if (currentPage < totalPages) {
-      btnLoader.style.display = 'block';
-    } else {
+    // Обновленная проверка: если загружено все доступное количество изображений
+    const totalLoadedImages = perPage * currentPage;
+    if (totalLoadedImages >= totalHits) {
       iziToast.info({
         title: 'Caution',
         message: `We're sorry, but you've reached the end of search results.`,
       });
       endLoader.style.display = 'block';
+      btnLoader.style.display = 'none';
+    } else {
+      btnLoader.style.display = 'block';
     }
 
     loaderMore.style.display = 'none';
